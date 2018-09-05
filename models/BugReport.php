@@ -35,8 +35,13 @@ class BugReport extends \yii\db\ActiveRecord
             [['issue_description'], 'string'],
             [['user_id'], 'integer'],
             [['created_at'], 'safe'],
-            [['name', 'email', 'screenshot'], 'string', 'max' => 255],
+            [['name', 'email'], 'string', 'max' => 255],
             [['email'], 'email'],
+            [
+                'screenshot', 'image',
+                'maxWidth' => 800, 'maxHeight' => 600,
+                'maxSize' => 1024 * 1024
+            ],
         ];
     }
 
