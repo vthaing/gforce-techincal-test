@@ -75,4 +75,10 @@ class BugReportFormCest
         );
     }
 
+    public function userIsUnactive(\FunctionalTester $I) {
+        $I->amLoggedInAs(2);
+        $I->amOnPage(['assessment/index']);
+        $I->see('You are not allow to access this location');
+    }
+
 }
