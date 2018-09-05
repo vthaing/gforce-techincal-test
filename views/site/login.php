@@ -5,6 +5,7 @@
 /* @var $model app\models\LoginForm */
 
 use yii\bootstrap\ActiveForm;
+use yii\helpers\Html;
 
 $this->title = 'Login';
 $this->params['breadcrumbs'][] = $this->title;
