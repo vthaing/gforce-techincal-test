@@ -90,7 +90,6 @@ class BugReport extends \yii\db\ActiveRecord
         $this->screenshotFile = \yii\web\UploadedFile::getInstance($this, 'screenshotFile');
         if (!($this->screenshotFile instanceof \yii\web\UploadedFile)) {
             $this->addError('screenshotFile', \Yii::t('app', "Error while saving your screenshot. Please try again later."));
-            $errorCode = $this->screenshotFile->error;
             \Yii::error("Error while validating file. File info" . print_r($_FILES, true));
             return false;
         }
@@ -114,6 +113,10 @@ class BugReport extends \yii\db\ActiveRecord
 
         $transaction->commit();
         return true;
+    }
+
+    public function sendMail() {
+        
     }
 
     /**
