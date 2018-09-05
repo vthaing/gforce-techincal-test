@@ -88,13 +88,15 @@ class BugReport extends \yii\db\ActiveRecord
         $transaction = \Yii::$app->db->beginTransaction();
         //Assign screenshot property
         $this->screenshotFile = \yii\web\UploadedFile::getInstance($this, 'screenshotFile');
-        if (!($this->screenshotFile instanceof \yii\web\UploadedFile)) {
-            $this->addError('screenshotFile', \Yii::t('app', "Error while saving your screenshot. Please try again later."));
-            \Yii::error("Error while validating file. File info" . print_r($_FILES, true));
-            return false;
+        if ($this->screenshotFile) {
+            if (!($this->screenshotFile instanceof \yii\web\UploadedFile)) {
+                $this->addError('screenshotFile', \Yii::t('app', "Error while saving your screenshot. Please try again later."));
+                \Yii::error("Error while validating file. File info" . print_r($_FILES, true));
+                return false;
+            }
+            
+            $this->screenshot = $this->screenshotFile->name;
         }
-
-        $this->screenshot = $this->screenshotFile->name;
         
         //Escape processing if saving error
         if (!$this->save()) {
@@ -103,7 +105,7 @@ class BugReport extends \yii\db\ActiveRecord
         }
 
         //Saving file
-        if (!$this->saveScreenshot()) {
+        if ($this->screenshot && !$this->saveScreenshot()) {
             $transaction->rollBack();
             $this->addError('screenshotFile', \Yii::t('app', "Error while saving your screenshot. Please try again later."));
             $errorCode = $this->screenshotFile->error;
