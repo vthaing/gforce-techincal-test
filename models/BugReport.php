@@ -17,6 +17,14 @@ use Yii;
  */
 class BugReport extends \yii\db\ActiveRecord
 {
+
+    /**
+     * Screenshot file object
+     * 
+     * @var \yii\web\UploadedFile
+     */
+    public $screenshotFile;
+    
     /**
      * {@inheritdoc}
      */
@@ -35,10 +43,10 @@ class BugReport extends \yii\db\ActiveRecord
             [['issue_description'], 'string'],
             [['user_id'], 'integer'],
             [['created_at'], 'safe'],
-            [['name', 'email'], 'string', 'max' => 255],
+            [['name', 'email', 'screenshot'], 'string', 'max' => 255],
             [['email'], 'email'],
             [
-                'screenshot', 'image',
+                'screenshotFile', 'image',
                 'maxWidth' => 800, 'maxHeight' => 600,
                 'maxSize' => 1024 * 1024
             ],
@@ -57,6 +65,7 @@ class BugReport extends \yii\db\ActiveRecord
             'issue_description' => Yii::t('app', 'Issue Description'),
             'user_id' => Yii::t('app', 'User ID'),
             'screenshot' => Yii::t('app', 'Screenshot'),
+            'screenshotFile' => Yii::t('app', 'Screenshot'),
             'created_at' => Yii::t('app', 'Created At'),
         ];
     }
@@ -68,5 +77,76 @@ class BugReport extends \yii\db\ActiveRecord
     public static function find()
     {
         return new BugReportQuery(get_called_class());
+    }
+
+    /**
+     * Register a new bug report
+     *
+     * @return boolean
+     */
+    public function registerBugReport() {
+        $transaction = \Yii::$app->db->beginTransaction();
+        //Assign screenshot property
+        $this->screenshotFile = \yii\web\UploadedFile::getInstance($this, 'screenshotFile');
+        if (!($this->screenshotFile instanceof \yii\web\UploadedFile)) {
+            $this->addError('screenshotFile', \Yii::t('app', "Error while saving your screenshot. Please try again later."));
+            $errorCode = $this->screenshotFile->error;
+            \Yii::error("Error while validating file. File info" . print_r($_FILES, true));
+            return false;
+        }
+
+        $this->screenshot = $this->screenshotFile->name;
+        
+        //Escape processing if saving error
+        if (!$this->save()) {
+            $transaction->rollBack();
+            return false;
+        }
+
+        //Saving file
+        if (!$this->saveScreenshot()) {
+            $transaction->rollBack();
+            $this->addError('screenshotFile', \Yii::t('app', "Error while saving your screenshot. Please try again later."));
+            $errorCode = $this->screenshotFile->error;
+            \Yii::error("Error while saving screenshot file. Error code: {$errorCode}\n File info: " . print_r($_FILES, true));
+            return false;
+        }
+
+        $transaction->commit();
+        return true;
+    }
+
+    /**
+     * Save screenshot
+     *
+     * @return boolean
+     */
+    public function saveScreenshot() {
+        $filePath = $this->getScreenshotFilePath();
+        return $this->screenshotFile->saveAs($filePath);
+    }
+
+    /**
+     * Get screenshot file path
+     * The file stored at: @webroot/bug_report/id.extension
+     *
+     * @return string
+     */
+    public function getScreenshotFilePath() {
+        $uploadPath = $this->getScreenshotUploadPath();
+        if (!is_dir($uploadPath)) {
+            mkdir($uploadPath);
+        }
+        return $uploadPath . $this->id . "." . $this->screenshotFile->extension;
+    }
+
+    /**
+     * Get base path to save screenshot
+     * The file stored at: @webroot/bug_report/
+     *
+     * @return string
+     */
+    public function getScreenshotUploadPath () {
+        return \Yii::getAlias('@webroot') . DIRECTORY_SEPARATOR . 'bug_report' . DIRECTORY_SEPARATOR;
     }
 }

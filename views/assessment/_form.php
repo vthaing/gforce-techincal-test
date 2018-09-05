@@ -19,7 +19,7 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'issue_description')->textarea(['rows' => 6]) ?>
 
 
-    <?= $form->field($model, 'screenshot')->fileInput() ?>
+    <?= $form->field($model, 'screenshotFile')->fileInput() ?>
 
 
     <div class="form-group">
