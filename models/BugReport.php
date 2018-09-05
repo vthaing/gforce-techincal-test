@@ -5,9 +5,10 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "bug_report".
+ * This is the model class for table "{{%bug_report}}".
  *
  * @property int $id
+ * @property string $name
  * @property string $email
  * @property string $issue_description
  * @property int $user_id
@@ -21,7 +22,7 @@ class BugReport extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'bug_report';
+        return '{{%bug_report}}';
     }
 
     /**
@@ -30,10 +31,12 @@ class BugReport extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
+            [['name', 'email', 'issue_description'], 'required'],
             [['issue_description'], 'string'],
             [['user_id'], 'integer'],
             [['created_at'], 'safe'],
-            [['email', 'screenshot'], 'string', 'max' => 255],
+            [['name', 'email', 'screenshot'], 'string', 'max' => 255],
+            [['email'], 'email'],
         ];
     }
 
@@ -44,6 +47,7 @@ class BugReport extends \yii\db\ActiveRecord
     {
         return [
             'id' => Yii::t('app', 'ID'),
+            'name' => Yii::t('app', 'Name'),
             'email' => Yii::t('app', 'Email'),
             'issue_description' => Yii::t('app', 'Issue Description'),
             'user_id' => Yii::t('app', 'User ID'),
