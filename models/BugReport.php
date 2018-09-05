@@ -161,6 +161,6 @@ class BugReport extends \yii\db\ActiveRecord
      * @return string
      */
     public function getScreenshotUploadPath () {
-        return \Yii::getAlias('@webroot') . DIRECTORY_SEPARATOR . 'bug_report' . DIRECTORY_SEPARATOR;
+        return \Yii::$app->params['bugReport']['screenShotPath'];
     }
 }
