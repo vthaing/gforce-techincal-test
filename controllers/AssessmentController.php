@@ -15,6 +15,7 @@ class AssessmentController extends Controller
         if ($model->load(Yii::$app->request->post()) && $model->registerBugReport()) {
             $successMessage = \Yii::t('app', "Thank you for reporting this bug, we will respond to you via email shortly.");
             \Yii::$app->session->setFlash('success', $successMessage);
+            $model->sendMail();
             return $this->redirect(['index']);
         }
 

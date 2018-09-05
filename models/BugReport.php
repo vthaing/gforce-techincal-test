@@ -115,8 +115,17 @@ class BugReport extends \yii\db\ActiveRecord
         return true;
     }
 
+    /**
+     * Send email to admin when customer register a new bug report
+     *
+     * @return void
+     */
     public function sendMail() {
-        
+        $message = \Yii::$app->mailer->compose('bug-report', ['bugReport' => $this]);
+        $message->setFrom($this->email);
+        $message->setTo(\Yii::$app->params['adminEmail'])
+            ->setSubject('Bug report')
+            ->send();
     }
 
     /**
