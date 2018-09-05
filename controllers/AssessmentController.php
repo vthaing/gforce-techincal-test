@@ -9,6 +9,27 @@ use Yii;
 class AssessmentController extends Controller
 {
 
+    public function behaviors() {
+        $rules = [
+            'access' => [
+                'class' => \yii\filters\AccessControl::class,
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ]
+                ],
+            ],
+            'authorizeActiveUser' => [
+                'class' => \app\components\AuthorizeActiveUser::class
+            ]
+        ];
+
+        return \yii\helpers\ArrayHelper::merge(parent::behaviors(), $rules);
+    }
+
+    
+
     public function actionIndex() {
         $model = new BugReport();
 
