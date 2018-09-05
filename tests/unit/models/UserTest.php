@@ -10,15 +10,15 @@ class UserTest extends \Codeception\Test\Unit
     {
         expect_that($user = User::findIdentity(1));
         expect($user->username)->equals('admin');
-
-        expect_not(User::findIdentity(999));
+        
+        expect_not(User::findIdentity(999)->id);
     }
 
 
     public function testFindUserByUsername()
     {
-        expect_that($user = User::findByUsername('admin'));
-        expect_not(User::findByUsername('disabled'));
+        expect_that(User::findByUsername('admin')->username == 'admin');
+        expect_that(User::findByUsername('disabled')->username == 'disabled');
     }
 
     /**
